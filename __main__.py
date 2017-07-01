@@ -29,8 +29,20 @@ for titleColumn in list_top250_title:
     
     movie_data.append({
         'Rank': rank,
-        'Title': title,
+        'Title': title.encode('utf-8'),
         'Year': year
     })
 
-print movie_data
+# print movie_data
+
+
+movie_file = open('IMDB_top_250.txt', 'w+')
+
+movie_file.write('Rank\tYear\tTitle\n')
+
+for movie in movie_data:
+    # print movie
+    movie_info = str(movie['Rank']) + "\t" + str(movie['Year']) + '\t' + movie['Title'] + '\n'
+    movie_file.write(movie_info)
+
+movie_file.close()
