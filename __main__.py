@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#encoding: utf-8
 
 import requests
 from bs4 import BeautifulSoup
@@ -24,24 +25,36 @@ def get_link_from_douban(movie_title):
     
     for title_div in result_list_div:
         movie_page_prefix = 'https://movie.douban.com/subject/'
+        movie_link = ''
+        need_type = '电影'
+        print need_type.decode('utf8')
         
-        # if the type is movie
-        href_tag = title_div.a
-        # query_title = href_tag.get('href', None)
+        type_in_Chinese = title_div.h3.span.get_text()
+        print type_in_Chinese
+        # print title_div.h3.span.find_next_siblings("span")
         
-        click_args = href_tag.get('onclick', None)
-
-        movie_sid = re.search(r'sid: \d*', click_args)
-        movie_sid = re.sub(r'\D', '', movie_sid.group())
-        # print movie_sid
-        
-        movie_link = movie_page_prefix + movie_sid + '/'
+        if re.search(need_type.decode('utf8'), unicode(type_in_Chinese, 'utf8')):
+            
+            # if the type is movie
+            href_tag = title_div.a
+            # query_title = href_tag.get('href', None)
+            
+            click_args = href_tag.get('onclick', None)
+    
+            movie_sid = re.search(r'sid: \d*', click_args)
+            
+            if movie_sid is None:
+                print 'Cannot find sid in ' + click_args
+            else:
+                movie_sid = re.sub(r'\D', '', movie_sid.group())
+                # print movie_sid
+                movie_link = movie_page_prefix + movie_sid + '/'
+            
         break
     
     print movie_link
     
     return movie_link
-
 
 r = requests.get("http://www.imdb.com/chart/top?ref_=nv_mv_250_6")
 bs = BeautifulSoup(r.text, "lxml")
@@ -73,6 +86,7 @@ for titleColumn in list_top250_title:
         'Title': title,
         'Link': link
     })
+    break
 
 # print movie_data
 
